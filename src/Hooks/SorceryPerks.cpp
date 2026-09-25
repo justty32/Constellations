@@ -165,7 +165,14 @@ namespace Hooks
 		if (!actor)
 			return;
 
-		const auto spellType = a_caster->currentSpell->GetSpellType();
+		// Guard against a null currentSpell: SetCastingTimerForCharge can run for a
+		// caster whose spell has already been cleared (e.g. an ability applied by
+		// script, or a cast interrupted), which crashed on the virtual GetSpellType.
+		const auto currentSpell = a_caster->currentSpell;
+		if (!currentSpell)
+			return;
+
+		const auto spellType = currentSpell->GetSpellType();
 		if (spellType == RE::MagicSystem::SpellType::kStaffEnchantment) {
 #if 0
 			float speedMult = 0.0f;
